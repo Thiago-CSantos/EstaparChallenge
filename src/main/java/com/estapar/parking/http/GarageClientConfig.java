@@ -1,0 +1,41 @@
+package com.estapar.parking.http;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.support.RestClientAdapter;
+import org.springframework.web.service.invoker.HttpServiceProxyFactory;
+
+@Configuration
+public class GarageClientConfig {
+
+    @Bean
+    public GarageClient garageClient() {
+
+        String baseUrl = "http://localhost:3000";
+
+        RestClient restClient = RestClient.builder()
+                .baseUrl(baseUrl)
+                .requestFactory(clientHttpRequestFactory())
+                .build();
+
+        HttpServiceProxyFactory factory = HttpServiceProxyFactory
+                .builderFor(RestClientAdapter.create(restClient))
+                .build();
+
+        return factory.createClient(GarageClient.class);
+
+    }
+
+    private ClientHttpRequestFactory clientHttpRequestFactory() {
+
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+
+        factory.setConnectTimeout(5000);
+        factory.setReadTimeout(5000);
+        return factory;
+    }
+
+}
