@@ -2,7 +2,9 @@ package com.estapar.parking.model;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -17,16 +19,16 @@ public class SectorEntity {
     private String name;
 
     @Column(name = "PRICE_BASE")
-    private Double priceBase;
+    private BigDecimal priceBase;
 
     @Column(name = "MAX_CAPACITY")
     private Integer maxCapacity;
 
     @Column(name = "OPEN_HOUR")
-    private LocalDateTime openHour;
+    private LocalTime openHour;
 
     @Column(name = "CLOSE_HOUR")
-    private LocalDateTime closeHour;
+    private LocalTime closeHour;
 
     @Column(name = "DURATION_LIMIT_MINUTES")
     private Integer durationLimitMinutes;
@@ -39,6 +41,16 @@ public class SectorEntity {
     private List<ParkingSpotEntity> parkingSpots;
 
     public SectorEntity() {
+    }
+
+    public SectorEntity(String name, BigDecimal priceBase, Integer maxCapacity,
+                        LocalTime openHour, LocalTime closeHour, Integer durationLimitMinutes) {
+        this.name = name;
+        this.priceBase = priceBase;
+        this.maxCapacity = maxCapacity;
+        this.openHour = openHour;
+        this.closeHour = closeHour;
+        this.durationLimitMinutes = durationLimitMinutes;
     }
 
     public Long getId() {
@@ -57,11 +69,11 @@ public class SectorEntity {
         this.name = name;
     }
 
-    public Double getPriceBase() {
+    public BigDecimal getPriceBase() {
         return priceBase;
     }
 
-    public void setPriceBase(Double priceBase) {
+    public void setPriceBase(BigDecimal priceBase) {
         this.priceBase = priceBase;
     }
 
@@ -73,19 +85,19 @@ public class SectorEntity {
         this.maxCapacity = maxCapacity;
     }
 
-    public LocalDateTime getOpenHour() {
+    public LocalTime getOpenHour() {
         return openHour;
     }
 
-    public void setOpenHour(LocalDateTime openHour) {
+    public void setOpenHour(LocalTime openHour) {
         this.openHour = openHour;
     }
 
-    public LocalDateTime getCloseHour() {
+    public LocalTime getCloseHour() {
         return closeHour;
     }
 
-    public void setCloseHour(LocalDateTime closeHour) {
+    public void setCloseHour(LocalTime closeHour) {
         this.closeHour = closeHour;
     }
 

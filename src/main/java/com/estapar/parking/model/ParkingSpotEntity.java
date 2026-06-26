@@ -25,6 +25,14 @@ public class ParkingSpotEntity {
     public ParkingSpotEntity() {
     }
 
+    public ParkingSpotEntity(Long id, Double lat, Double lng, boolean occupied, SectorEntity sector) {
+        this.id = id;
+        this.lat = lat;
+        this.lng = lng;
+        this.occupied = occupied;
+        this.sector = sector;
+    }
+
     public Long getId() {
         return id;
     }
