@@ -1,5 +1,6 @@
 package com.estapar.parking.http;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -11,10 +12,11 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 @Configuration
 public class GarageClientConfig {
 
+    @Value("${garage.client.url:http://localhost:3000}")
+    private String baseUrl;
+
     @Bean
     public GarageClient garageClient() {
-
-        String baseUrl = "http://localhost:3000";
 
         RestClient restClient = RestClient.builder()
                 .baseUrl(baseUrl)

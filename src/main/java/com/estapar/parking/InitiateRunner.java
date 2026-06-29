@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.net.ConnectException;
 import java.util.List;
 
 @Component
@@ -26,45 +27,55 @@ public class InitiateRunner implements CommandLineRunner {
     ParkingSpotRepository parkingSpotRepository;
 
     @Override
-    public void run(String @NonNull ... args) throws Exception {
+    public void run(String @NonNull ... args) {
 
-        if (sectorRepository.findAll().isEmpty()) {
+        try {
+            if (sectorRepository.findAll().isEmpty()) {
 
-            GarageDTO response = garageClient.getGarage();
+                GarageDTO response = garageClient.getGarage();
 
-            List<SectorEntity> entityList = response.sector().stream().map(s ->
-                    new SectorEntity(
-                            s.name(),
-                            s.basePrice(),
-                            s.maxCapacity(),
-                            s.openHour(),
-                            s.closeHour(),
-                            s.durationLimitMinutes()
-                    )
-            ).toList();
+                List<SectorEntity> entityList = response.sector().stream().map(s ->
+                        new SectorEntity(
+                                s.name(),
+                                s.basePrice(),
+                                s.maxCapacity(),
+                                s.openHour(),
+                                s.closeHour(),
+                                s.durationLimitMinutes()
+                        )
+                ).toList();
 
-            List<SectorEntity> sectorEntities = sectorRepository.saveAll(entityList);
+                List<SectorEntity> sectorEntities = sectorRepository.saveAll(entityList);
 
-            List<ParkingSpotEntity> spotEntityList = response.spots().stream().map(spot ->
-                    new ParkingSpotEntity(
-                            spot.id(),
-                            spot.lat(),
-                            spot.lng(),
-                            spot.occupied(),
-                            sectorEntities.stream()
-                                    .filter(f -> f
-                                            .getName()
-                                            .equals(spot.sector())
-                                    )
-                                    .findFirst()
-                                    .orElseThrow(() -> new RuntimeException("Spot não encontrado"))
-                    )
+                List<ParkingSpotEntity> spotEntityList = response.spots().stream().map(spot ->
+                        new ParkingSpotEntity(
+                                spot.id(),
+                                spot.lat(),
+                                spot.lng(),
+                                spot.occupied(),
+                                sectorEntities.stream()
+                                        .filter(f -> f
+                                                .getName()
+                                                .equals(spot.sector())
+                                        )
+                                        .findFirst()
+                                        .orElseThrow(() -> new RuntimeException("Spot não encontrado"))
+                        )
 
-            ).toList();
+                ).toList();
+                parkingSpotRepository.saveAll(spotEntityList);
+            } else {
+                System.out.println("Está vazio");
+            }
 
-            parkingSpotRepository.saveAll(spotEntityList);
-        } else {
-            System.out.println("Está vazio");
+        } catch (Exception e) {
+
+            if (e.getCause() instanceof ConnectException) {
+                System.out.println("Erro ao conectar com o servidor: " + e.getMessage());
+            } else {
+                System.out.println("Erro ao iniciar o banco de dados: " + e.getMessage());
+            }
+
         }
     }
 
