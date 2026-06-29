@@ -24,6 +24,7 @@ public class ParkingSessionEntity {
     private LocalDateTime exitTime;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "STATUS", length = 7)
     private SessionStatusEnum status;
 
     @ManyToOne
@@ -40,6 +41,19 @@ public class ParkingSessionEntity {
     private BigDecimal finalPrice;
 
     public ParkingSessionEntity() {
+    }
+
+    public ParkingSessionEntity(String licensePlate, LocalDateTime entryTime, LocalDateTime exitTime,
+                                SessionStatusEnum status, ParkingSpotEntity spot, BigDecimal priceCalculated,
+                                BigDecimal appliedDiscount, BigDecimal finalPrice) {
+        this.licensePlate = licensePlate;
+        this.entryTime = entryTime;
+        this.exitTime = exitTime;
+        this.status = status;
+        this.spot = spot;
+        this.priceCalculated = priceCalculated;
+        this.appliedDiscount = appliedDiscount;
+        this.finalPrice = finalPrice;
     }
 
     public Long getId() {
