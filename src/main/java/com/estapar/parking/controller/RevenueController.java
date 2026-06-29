@@ -19,8 +19,6 @@ public class RevenueController {
     @GetMapping
     public ResponseEntity<?> getRevenue(@RequestBody RevenueRequest request) {
         try {
-
-
             return ResponseEntity.ok(revenueService.getRevenue(request));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

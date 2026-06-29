@@ -20,13 +20,17 @@ public class WebhookController {
     public ResponseEntity<?> webhook(@RequestBody WebhookRequest payload) {
         try {
 
+            if (payload.eventType() == null) {
+                return ResponseEntity.badRequest().body("eventType ausente no payload");
+            }
+
             switch (payload.eventType()) {
                 case "ENTRY" -> webhookService.handleEntry(payload);
                 case "PARKED" -> webhookService.handleParked(payload);
                 case "EXIT" -> webhookService.handleExit(payload);
             }
 
-            return ResponseEntity.ok("Webhook received");
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error processing webhook: " + e.getMessage());
         }
