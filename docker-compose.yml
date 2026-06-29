@@ -1,0 +1,55 @@
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: DB_GARAGE
+      MYSQL_USER: thiago
+      MYSQL_PASSWORD: thiago
+    ports:
+      - "3307:3306"
+    networks:
+      - estapar-net
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  simulator:
+    image: cfontes0estapar/garage-sim:1.0.0
+    container_name: simulator
+    ports:
+      - "3000:3000"
+    environment:
+      EXTERNAL_API_URL: http://parking-app:3003/webhook
+    extra_hosts:
+      - "localhost:172.19.0.4"
+    networks:
+      - estapar-net
+
+  parking-app:
+    build: .
+    container_name: parking-app
+    ports:
+      - "3003:3003"
+      - "5005:5005"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/DB_GARAGE
+      SPRING_DATASOURCE_USERNAME: thiago
+      SPRING_DATASOURCE_PASSWORD: thiago
+      GARAGE_CLIENT_URL: http://simulator:3000
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      simulator:
+        condition: service_started
+    networks:
+      - estapar-net
+
+networks:
+  estapar-net:
+    driver: bridge
